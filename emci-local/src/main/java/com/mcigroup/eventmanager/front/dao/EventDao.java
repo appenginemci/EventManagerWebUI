@@ -48,7 +48,7 @@ public class EventDao {
 		List<Event> events = new ArrayList<Event>();
 		try {
 			try {
-				String statement = "SELECT event.eventId, event.id, event.folderId FROM event, eventmember where eventmember.event_id=event.id and eventmember.user_id = ?";
+				String statement = "SELECT event.id, event.folderId FROM event, eventmember where eventmember.event_id=event.id and eventmember.user_id = ?";
 				PreparedStatement stmt;
 
 				stmt = conn.prepareStatement(statement);
@@ -60,7 +60,6 @@ public class EventDao {
 					System.out.println("folderId = "
 							+ resultSet.getString("folderId"));
 					events.add(new Event(resultSet.getInt("id"), resultSet
-							.getString("eventId"), resultSet
 							.getString("folderId")));
 				}
 			} finally {

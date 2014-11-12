@@ -49,10 +49,6 @@
 				<ul class="nav navbar-nav navbar-right">
 					<li class="dropdown"><a href="#" class="dropdown-toggle"
 						data-toggle="dropdown"><c:out value="${session.email}" escapeXml="false"/> <span class="caret"></span></a>
-						<ul class="dropdown-menu" role="menu">
-							<li><a href="/admin">Settings</a></li>
-							<li><a href="#">Log out</a></li>
-						</ul>
 					</li>
 				</ul>
 			</div>

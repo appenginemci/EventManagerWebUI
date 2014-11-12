@@ -206,7 +206,6 @@ public class DriveAPIService {
 				Collection<Event> events = eventDao.getEventByUser(user);
 				for (Event event : events) {
 					System.err.println("Event : id = " + event.getId()
-							+ " -- eventId = " + event.getEventId()
 							+ " -- folderId = " + event.getFolderId());
 					File eventFolder = drive.files().get(event.getFolderId())
 							.execute();

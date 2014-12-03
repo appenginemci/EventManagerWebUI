@@ -70,6 +70,7 @@
 						<th>New</th>
 						<th>In Progress</th>
 						<th>For Approval</th>
+						<th>Archived</th>
 					</tr>			
 				</thead>
 				<tbody>
@@ -92,6 +93,10 @@
 							<span ng-hide="row.validation_ask.folderLink == ''"><a href="{{row.validation_ask.folderLink}}" target="_blank">{{row.validation_ask.number}}</a></span>
 							<span ng-show="row.validation_ask.folderLink == ''">{{row.validation_ask.number}}</span>
 						</td>
+						<td>
+							<span ng-hide="row.closed.folderLink == ''"><a href="{{row.closed.folderLink}}" target="_blank">{{row.closed.number}}</a></span>
+							<span ng-show="row.closed.folderLink == ''">{{row.closed.number}}</span>
+						</td>
 					</tr>
 				</tbody>
 			</table>
@@ -105,6 +110,7 @@
 						<th>New</th>
 						<th>In Progress</th>
 						<th>For Approval</th>
+						<th>Archived</th>
 					</tr>			
 				</thead>
 				<tbody>
@@ -125,6 +131,10 @@
 						<td>
 							<span ng-hide="userrow.validation_ask.folderLink == ''"><a href="{{userrow.validation_ask.folderLink}}" target="_blank">{{userrow.validation_ask.number}}</a></span>
 							<span ng-show="userrow.validation_ask.folderLink == ''">{{userrow.validation_ask.number}}</span>
+						</td>
+						<td>
+							<span ng-hide="userrow.closed.folderLink == ''"><a href="{{userrow.closed.folderLink}}" target="_blank">{{userrow.closed.number}}</a></span>
+							<span ng-show="userrow.closed.folderLink == ''">{{userrow.closed.number}}</span>
 						</td>
 					</tr>
 				</tbody>

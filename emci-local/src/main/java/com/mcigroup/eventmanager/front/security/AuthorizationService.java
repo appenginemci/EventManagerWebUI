@@ -2,10 +2,11 @@ package com.mcigroup.eventmanager.front.security;
 
 
 import com.mcigroup.eventmanager.front.model.UserSession;
+import com.mcigroup.eventmanager.front.service.DirectoryAPIService;
 
 public class AuthorizationService {
 	
-//	private static String groupEmailAddress = "ppic-acl@capgemini-sogeti.com";
+//	private static String groupEmailAddress = "googleforwork-zurich2015-reg@mci-group.com";
 	
 	public static UserSession getAuthorization(String userEmail){
 		

@@ -10,42 +10,14 @@ import java.util.Collection;
 import java.util.List;
 
 import com.google.appengine.api.utils.SystemProperty;
+import com.mcigroup.eventmanager.front.helper.ConnectionUtil;
 import com.mcigroup.eventmanager.front.model.Event;
+import com.mcigroup.eventmanager.front.model.EventMember;
 import com.mcigroup.eventmanager.front.model.User;
 
 public class UserDao {
-	private static Connection getConnection() {
-		String url = null;
-		Connection conn = null;
-		try {
-			if (SystemProperty.environment.value() == SystemProperty.Environment.Value.Production) {
-				// Load the class that provides the new "jdbc:google:mysql://"
-				// prefix.
-				System.err.println("get SQL cloud connection");
-				Class.forName("com.mysql.jdbc.GoogleDriver");
-				url = "jdbc:google:mysql://bright-folder-720:eventmgr/eventmanager";
-			} else {
-				// Local MySQL instance to use during development.
-				System.err.println("Try to establish local connection with DB");
-				Class.forName("com.mysql.jdbc.Driver");
-				url = "jdbc:mysql://127.0.0.1:3306/eventmanager";
-
-			}
-		} catch (Exception e) {
-			System.err.println(e.getMessage());
-			return null;
-		}
-		try {
-			conn = DriverManager.getConnection(url, "evtmgradmin", "sogeTTi$00");
-			return conn;
-		} catch (SQLException e) {
-			System.err.println(e.getMessage());
-		} 
-		return conn;
-	}
-	
 	public User getUserByEmail(String userEmail) {
-		Connection conn = getConnection();
+		Connection conn = ConnectionUtil.getConnection();
 		try {
 			try{
 			String statement = "SELECT me.id,me.userName,me.userId FROM member me where me.userId = ?";
@@ -56,7 +28,7 @@ public class UserDao {
 			stmt.setString(1, userEmail);
 			ResultSet resultSet = stmt.executeQuery();
 			while (resultSet.next()) {
-				System.out.println("userId = " + resultSet.getInt("id"));
+//				System.out.println("userId = " + resultSet.getInt("id"));
 				return new User(resultSet.getInt("id"),resultSet.getString("userName"),userEmail);
 				
 			}
@@ -69,20 +41,23 @@ public class UserDao {
 		return null;
 	}
 	
-	public Collection<User> getUsersForEvent(Event event) {
-		Connection conn = getConnection();
-		List<User> userList = new ArrayList<User>();
+	
+	public Collection<EventMember> getEventMemberForEvent(Event event) {
+		Connection conn = ConnectionUtil.getConnection();
+		//List<User> userList = new ArrayList<User>();
+		List<EventMember> userList = new ArrayList<EventMember>();
 		try {
 			try{
-				String statement = "SELECT me.id,me.userId,me.userName FROM member me, eventmember em where em.user_id=me.id and em.event_id = ?";
+				String statement = "SELECT me.id,me.userId,me.userName, em.in_progress_folder_id, em.for_approval_folder_id FROM member me, eventmember em where em.user_id=me.id and em.event_id = ?";
 				PreparedStatement stmt;
 
 				stmt = conn.prepareStatement(statement);
 				stmt.setInt(1, event.getId());
 				ResultSet resultSet = stmt.executeQuery();
 				while (resultSet.next()) {
-					System.out.println("userId = " + resultSet.getInt("id"));
-					userList.add(new User(resultSet.getInt("id"),resultSet.getString("userName"),resultSet.getString("userId")));
+//					System.out.println("userId = " + resultSet.getInt("id"));
+					//userList.add(new User(resultSet.getInt("id"),resultSet.getString("userName"),resultSet.getString("userId")));
+					userList.add(new EventMember(new User(resultSet.getInt("id"),resultSet.getString("userName"),resultSet.getString("userId")), event, resultSet.getString("in_progress_folder_id"), resultSet.getString("for_approval_folder_id")));
 				
 				}
 			}finally {
@@ -93,4 +68,36 @@ public class UserDao {
 		}
 		return userList;
 	}
+	
+//	public Collection<EventMember> getEventMemberForManager(User user) {
+//		Connection conn = ConnectionUtil.getConnection();
+//		//List<User> userList = new ArrayList<User>();
+//		List<EventMember> userList = new ArrayList<EventMember>();
+//		try {
+//			try{
+//				
+//				String statement = "select member.id as user_id, member.userName, member.userId, event.id as event_id, event.eventName, event.folderId, event.inboxNewFolderId, event.closedFolderId, eventmember.in_progress_folder_id, eventmember.for_approval_folder_id from eventmember, event, member where event.id=eventmember.event_id and member.id=eventmember.user_id and eventmember.event_id in (select distinct event_id from eventmember where user_id=?) order by event_id, user_id";
+//				//String statement = "SELECT me.*, em.*, event.* FROM member me, eventmember em, event event where em.user_id=me.id and em.event_id = ?";
+//				PreparedStatement stmt;
+//
+//				stmt = conn.prepareStatement(statement);
+//				stmt.setInt(1, user.getId());
+//				ResultSet resultSet = stmt.executeQuery();
+//				while (resultSet.next()) {
+//					System.out.println("userId = " + resultSet.getInt("user_id"));
+//					//userList.add(new User(resultSet.getInt("id"),resultSet.getString("userName"),resultSet.getString("userId")));
+//					userList.add(new EventMember(new User(resultSet.getInt("user_id"), resultSet.getString("userName"), resultSet.getString("userId")), new Event(resultSet.getInt("event_id"), resultSet.getString("folderId"), resultSet.getString("inboxNewFolderId"), resultSet.getString("eventName"), resultSet.getString("closedFolderId")), resultSet.getString("in_progress_folder_id"), resultSet.getString("for_approval_folder_id")));
+//				
+//				}
+//			}finally {
+//				conn.close();
+//			}
+//		} catch (SQLException e1) {
+//			e1.printStackTrace();
+//			System.err.println("connection error");
+//		}
+//		return userList;
+//	}
+	
+	
 }

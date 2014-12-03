@@ -10,6 +10,8 @@ import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.jackson2.JacksonFactory;
+import com.google.api.services.admin.directory.Directory;
+import com.google.api.services.admin.directory.DirectoryScopes;
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.DriveScopes;
 import com.mcigroup.eventmanager.front.dao.DomainCredentialsDAO;
@@ -30,6 +32,17 @@ public class CredentialLoader {
 			}
 				  
 		  return driveService;
+		}
+		
+		public static Directory getDirectoryService(){
+			Directory directoryService = null;
+			
+			if(googleCredentialItem != null){
+				directoryService = new Directory.Builder(googleCredentialItem.getHttpTransport(), googleCredentialItem.getJsonFactory(), null)
+			      .setHttpRequestInitializer(googleCredentialItem.getGoogleCredential()).setApplicationName("My Project").build();
+			}
+				  
+		  return directoryService;
 		}
 
 		private static GoogleCredentialItem generateGoogleCredentialItem(ArrayList<String> scopes){
@@ -89,6 +102,18 @@ public class CredentialLoader {
 		private static ArrayList<String> getDriveScopes(){
 			ArrayList<String> scopes = new ArrayList<String>();
 			scopes.add(DriveScopes.DRIVE_READONLY);
+			
+			return scopes;
+		}	
+		
+		/**
+		 * 
+		 * @return Google Drive API scopes required
+		 */
+		private static ArrayList<String> getDirectoryScopes(){
+			ArrayList<String> scopes = new ArrayList<String>();
+			scopes.add(DirectoryScopes.ADMIN_DIRECTORY_USER_READONLY);
+			scopes.add(DirectoryScopes.ADMIN_DIRECTORY_GROUP);
 			
 			return scopes;
 		}	

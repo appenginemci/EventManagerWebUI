@@ -10,64 +10,65 @@ import java.util.Collection;
 import java.util.List;
 
 import com.google.appengine.api.utils.SystemProperty;
+import com.mcigroup.eventmanager.front.helper.ConnectionUtil;
 import com.mcigroup.eventmanager.front.model.Event;
+import com.mcigroup.eventmanager.front.model.EventMember;
 import com.mcigroup.eventmanager.front.model.User;
 
 public class EventDao {
-	private static Connection getConnection() {
-		String url = null;
-		Connection conn = null;
-		try {
-			if (SystemProperty.environment.value() == SystemProperty.Environment.Value.Production) {
-				// Load the class that provides the new "jdbc:google:mysql://"
-				// prefix.
-				System.err.println("get SQL cloud connection");
-				Class.forName("com.mysql.jdbc.GoogleDriver");
-				url = "jdbc:google:mysql://bright-folder-720:eventmgr/eventmanager";
-			} else {
-				// Local MySQL instance to use during development.
-				System.err.println("Try to establish local connection with DB");
-				Class.forName("com.mysql.jdbc.Driver");
-				url = "jdbc:mysql://127.0.0.1:3306/eventmanager";
-
-			}
-		} catch (Exception e) {
-			System.err.println(e.getMessage());
-			return null;
-		}
-		try {
-			conn = DriverManager.getConnection(url, "evtmgradmin", "sogeTTi$00");
-			return conn;
-		} catch (SQLException e) {
-			System.err.println(e.getMessage());
-		} 
-		return conn;
-	}
 	public Collection<Event> getEventByUser(User user) {
-		Connection conn = getConnection();
+		Connection conn = ConnectionUtil.getConnection();
 		List<Event> events = new ArrayList<Event>();
 		try {
 			try {
-				String statement = "SELECT event.id, event.folderId FROM event, eventmember where eventmember.event_id=event.id and eventmember.user_id = ?";
+				String statement = "SELECT event.id, event.folderId, event.inboxNewFolderId, event.eventName, event.closedFolderId FROM event, eventmember where eventmember.event_id=event.id and eventmember.user_id = ?";
 				PreparedStatement stmt;
 
 				stmt = conn.prepareStatement(statement);
 
 				stmt.setInt(1, user.getId());
-				System.err.println("in getEventByUser with User id = " + user.getId());
+//				System.err.println("in getEventByUser with User id = " + user.getId());
 				ResultSet resultSet = stmt.executeQuery();
 				while (resultSet.next()) {
-					System.out.println("folderId = "
-							+ resultSet.getString("folderId"));
-					events.add(new Event(resultSet.getInt("id"), resultSet
-							.getString("folderId")));
+//					System.out.println("folderId = "
+//							+ resultSet.getString("folderId"));
+					events.add(new Event(resultSet.getInt("id"), resultSet.getString("folderId"),resultSet
+							.getString("inboxNewFolderId"),resultSet
+							.getString("eventName"), resultSet.getString("closedFolderId") ));
 				}
 			} finally {
 				conn.close();
 			}
 		} catch (SQLException e1) {
-			System.err.println("connection error");
+//			System.err.println("connection error");
 		}
 		return events;
+	}
+	
+	public Collection<EventMember> getEventMemberForUser(User user) {
+		Connection conn = ConnectionUtil.getConnection();
+		//List<User> userList = new ArrayList<User>();
+		List<EventMember> userList = new ArrayList<EventMember>();
+		try {
+			try{
+				String statement = "SELECT  event.id, event.folderId, event.inboxNewFolderId, event.eventName, event.closedFolderId, em.in_progress_folder_id, em.for_approval_folder_id FROM event event, eventmember em where em.event_id=event.id and em.user_id = ?";
+				PreparedStatement stmt;
+
+				stmt = conn.prepareStatement(statement);
+				stmt.setInt(1, user.getId());
+				ResultSet resultSet = stmt.executeQuery();
+				while (resultSet.next()) {
+//					System.out.println("userId = " + resultSet.getInt("id"));
+					//userList.add(new User(resultSet.getInt("id"),resultSet.getString("userName"),resultSet.getString("userId")));
+					userList.add(new EventMember(user, new Event(resultSet.getInt("id"),resultSet.getString("folderId"),resultSet.getString("inboxNewFolderId"),resultSet.getString("eventName"),resultSet.getString("closedFolderId")), resultSet.getString("in_progress_folder_id"), resultSet.getString("for_approval_folder_id")));
+				
+				}
+			}finally {
+				conn.close();
+			}
+		} catch (SQLException e1) {
+			System.err.println("connection error");
+		}
+		return userList;
 	}
 }

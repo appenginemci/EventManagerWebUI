@@ -65,9 +65,17 @@ public class CredentialLoader {
 			      .setJsonFactory(jsonFactory)
 			      .setServiceAccountId(domainCredentials.getServiceAccountEmail())
 			      .setServiceAccountScopes(scopes)
-			      .setServiceAccountUser("apps.engine@mci-group.com")
+			      .setServiceAccountUser("mci.project@demo.sogeti-reseller.com")
 			      .setServiceAccountPrivateKeyFromP12File(new File(CredentialLoader.class.getResource("/" + domainCredentials.getCertificatePath()).toURI()))
 			      .build();
+//				googleCredential = new GoogleCredential.Builder()
+//			      .setTransport(httpTransport)
+//			      .setJsonFactory(jsonFactory)
+//			      .setServiceAccountId(domainCredentials.getServiceAccountEmail())
+//			      .setServiceAccountScopes(scopes)
+//			      .setServiceAccountUser("apps.engine@mci-group.com")
+//			      .setServiceAccountPrivateKeyFromP12File(new File(CredentialLoader.class.getResource("/" + domainCredentials.getCertificatePath()).toURI()))
+//			      .build();
 				
 				googleCredentialItem = new GoogleCredentialItem();
 				googleCredentialItem.setGoogleCredential(googleCredential);
@@ -89,7 +97,7 @@ public class CredentialLoader {
 		
 		private static ArrayList<String> getAllServicesScopes(){
 			ArrayList<String> scopes = new ArrayList<String>();
-			//scopes.addAll(getDirectoryScopes());
+			scopes.addAll(getDirectoryScopes());
 			scopes.addAll(getDriveScopes());
 			
 			return scopes;
@@ -113,7 +121,7 @@ public class CredentialLoader {
 		private static ArrayList<String> getDirectoryScopes(){
 			ArrayList<String> scopes = new ArrayList<String>();
 			scopes.add(DirectoryScopes.ADMIN_DIRECTORY_USER_READONLY);
-			scopes.add(DirectoryScopes.ADMIN_DIRECTORY_GROUP);
+//			scopes.add(DirectoryScopes.ADMIN_DIRECTORY_GROUP);
 			
 			return scopes;
 		}	

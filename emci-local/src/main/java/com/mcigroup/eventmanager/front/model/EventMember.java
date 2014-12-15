@@ -5,6 +5,7 @@ private User user;
 private Event event;
 private String forApprovalFolderId;
 private String inProgressFolderId;
+private String role;
 
 
 
@@ -57,12 +58,25 @@ public void setInProgressFolderId(String inProgressFolderId) {
 
 
 
-public EventMember(User user, Event event, String inProgressFolderId ,String forApprovalFolderId ) {
+public EventMember(User user, Event event, String inProgressFolderId ,String forApprovalFolderId,String role ) {
 	super();
 	this.user = user;
 	this.event = event;
 	this.inProgressFolderId = inProgressFolderId;
 	this.forApprovalFolderId = forApprovalFolderId;
+	this.role = role;
+}
+
+
+
+public String getRole() {
+	return role;
+}
+
+
+
+public void setRole(String role) {
+	this.role = role;
 }
 
 }

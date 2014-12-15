@@ -23,6 +23,7 @@ import com.mcigroup.eventmanager.front.model.ConsumerTypeEnum;
 import com.mcigroup.eventmanager.front.model.Event;
 import com.mcigroup.eventmanager.front.model.EventMember;
 import com.mcigroup.eventmanager.front.model.User;
+import com.mcigroup.eventmanager.front.model.UserRoleEnum;
 import com.mcigroup.eventmanager.front.security.CredentialLoader;
 
 public class DriveAPIService {
@@ -60,7 +61,8 @@ public class DriveAPIService {
 			HashMap<String, Object> fileLinkAndCount = new HashMap<String, Object>();
 			int numberOfFiles = 0;
 			String folderLink = "";
-			if(!StringUtils.isEmpty(folderId)){
+			System.err.println("CHECK FOLDER ID = " + folderId);
+			if(!StringUtils.isEmpty(folderId) && !"null".equals(folderId.toLowerCase())){
 				try {
 					folderLink = "https://drive.google.com/a/mci-group.com/?usp=folder#folders/" + folderId;
 					Files.List request = drive.files().list().setQ("mimeType != 'application/vnd.google-apps.folder' and " + "'" + folderId + "' in parents and trashed = false");
@@ -104,6 +106,71 @@ public class DriveAPIService {
 		}
 		return Tools.gson.toJson(userEvents);
 
+	}
+	
+	public static String getFileListForUser(String userEmail) {
+		List<HashMap<String, Object>> userEvents = new ArrayList<HashMap<String, Object>>();
+		UserDao userDao = new UserDao();
+		EventDao eventDao = new EventDao();
+//		HashMap<String,Object> consumerType = new HashMap<String, Object>(1);
+//		consumerType.put("consumerType", ConsumerTypeEnum.USER.getConsumerType());
+//		userEvents.add(consumerType);
+//		try {
+			User user = userDao.getUserByEmail(userEmail);
+			if (user != null) {
+				
+			Collection<EventMember> eventMembers = eventDao.getEventMemberForUser(user);
+			for(EventMember eventMember : eventMembers) {
+				if(UserRoleEnum.EVENTHEAD.getUserRole().equalsIgnoreCase(eventMember.getRole()) || UserRoleEnum.POOLHEAD.getUserRole().equalsIgnoreCase(eventMember.getRole())) {
+					System.err.println("Member is MANAGER");
+					userEvents.addAll(getFileListManager(eventMember));
+				} else {
+					System.err.println("Member is USER");
+					userEvents.add(getFileListUser(eventMember));
+				}
+//				
+			}
+			}
+//		} catch (IOException e) {
+//			System.err.println("Error while trying to retrieve the eventFolder");
+//		}
+		return Tools.gson.toJson(userEvents);
+
+	}
+	
+	public static HashMap<String, Object> getFileListUser(EventMember eventMember) {
+		System.err.println("New folder id = " + eventMember.getEvent().getNewFolderId());
+		HashMap<String, Object> numberOfNewFiles = getNbFilesInFolder(eventMember.getEvent().getNewFolderId());
+		HashMap<String, Object> numberOfClosedFiles = getNbFilesInFolder(eventMember.getEvent().getClosedFolderId());
+		HashMap<String, Object> toReturn = new HashMap<String, Object>();
+		try {
+			toReturn = getFilesForEventAndUser(eventMember, numberOfNewFiles, numberOfClosedFiles);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return toReturn;
+//		System.err.println("User : " + eventMember.getUser().getUserName() + " checked");
+	}
+	
+	public static List<HashMap<String, Object>> getFileListManager(EventMember eventMember) {
+		UserDao userDao = new UserDao();
+		List<HashMap<String, Object>> toReturn = new ArrayList<HashMap<String, Object>>();
+		Collection<EventMember> usersForEvent = userDao
+									.getEventMemberForEvent(eventMember.getEvent());
+		HashMap<String, Object> numberOfNewFiles = getNbFilesInFolder(eventMember.getEvent().getNewFolderId());
+		HashMap<String, Object> numberOfClosedFiles = getNbFilesInFolder(eventMember.getEvent().getClosedFolderId());
+		for (EventMember userEvent : usersForEvent) {
+			try {
+				toReturn.add(getFilesForEventAndUser(userEvent, numberOfNewFiles, numberOfClosedFiles));
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			System.err.println("User : " + userEvent.getUser().getUserName() + " checked");
+		}
+		return toReturn;
+				
 	}
 	
 	public static String getFileListForManager(String userEmail) {

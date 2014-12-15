@@ -15,6 +15,12 @@ public class DataManager {
 		
 	}
 	
+	public static<T> String getDriveListForUser(String userEmail){
+		
+		return DriveAPIService.getFileListForUser(userEmail);
+	
+}
+	
 	public static<T> String getDriveListForManager(String userEmail){
 		
 		return DriveAPIService.getFileListForManager(userEmail);

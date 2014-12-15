@@ -41,20 +41,20 @@ public class DataServlet  extends HttpServlet {
 						UserService userService = UserServiceFactory.getUserService();
 						if(userService.getCurrentUser() != null){
 							String userEmail = userService.getCurrentUser().getEmail();
-							String consumerType = DataManager.getConsumerType(userEmail);
-							if(ConsumerTypeEnum.MANAGER.getConsumerType().equals(consumerType)) {
-								toReturn = DataManager.getDriveListForManager(userEmail);
+							//String consumerType = DataManager.getConsumerType(userEmail);
+							//if(ConsumerTypeEnum.MANAGER.getConsumerType().equals(consumerType)) {
+//								toReturn = DataManager.getDriveListForManager(userEmail);
+//								resp.setContentType("application/json");
+//								PrintWriter out = resp.getWriter();
+//								out.print(toReturn);
+//								out.flush();
+//							} else {
+								toReturn = DataManager.getDriveListForUser(userEmail);
 								resp.setContentType("application/json");
 								PrintWriter out = resp.getWriter();
 								out.print(toReturn);
 								out.flush();
-							} else {
-								toReturn = DataManager.getDriveList(userEmail);
-								resp.setContentType("application/json");
-								PrintWriter out = resp.getWriter();
-								out.print(toReturn);
-								out.flush();
-							}
+//							}
 //						}
 //					}
 //				}

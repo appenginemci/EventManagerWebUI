@@ -21,7 +21,7 @@ public class EventDao {
 		List<Event> events = new ArrayList<Event>();
 		try {
 			try {
-				String statement = "SELECT event.id, event.folderId, event.inboxNewFolderId, event.eventName, event.closedFolderId FROM event, eventmember where eventmember.event_id=event.id and eventmember.user_id = ?";
+				String statement = "SELECT event.id, event.folderId, event.inboxNewFolderId, event.eventName, event.closedFolderId FROM event, eventmember where eventmember.event_id=event.id and eventmember.user_id = ? and eventmember.active=1";
 				PreparedStatement stmt;
 
 				stmt = conn.prepareStatement(statement);
@@ -51,7 +51,7 @@ public class EventDao {
 		List<EventMember> userList = new ArrayList<EventMember>();
 		try {
 			try{
-				String statement = "SELECT  event.id, event.folderId, event.inboxNewFolderId, event.eventName, event.closedFolderId, em.in_progress_folder_id, em.for_approval_folder_id FROM event event, eventmember em where em.event_id=event.id and em.user_id = ?";
+				String statement = "SELECT  event.id, event.folderId, event.inboxNewFolderId, event.eventName, event.closedFolderId, em.in_progress_folder_id, em.for_approval_folder_id, em.role FROM event event, eventmember em where em.event_id=event.id and em.user_id = ? and em.active=1";
 				PreparedStatement stmt;
 
 				stmt = conn.prepareStatement(statement);
@@ -60,7 +60,7 @@ public class EventDao {
 				while (resultSet.next()) {
 //					System.out.println("userId = " + resultSet.getInt("id"));
 					//userList.add(new User(resultSet.getInt("id"),resultSet.getString("userName"),resultSet.getString("userId")));
-					userList.add(new EventMember(user, new Event(resultSet.getInt("id"),resultSet.getString("folderId"),resultSet.getString("inboxNewFolderId"),resultSet.getString("eventName"),resultSet.getString("closedFolderId")), resultSet.getString("in_progress_folder_id"), resultSet.getString("for_approval_folder_id")));
+					userList.add(new EventMember(user, new Event(resultSet.getInt("id"),resultSet.getString("folderId"),resultSet.getString("inboxNewFolderId"),resultSet.getString("eventName"),resultSet.getString("closedFolderId")), resultSet.getString("in_progress_folder_id"), resultSet.getString("for_approval_folder_id"),resultSet.getString("role")));
 				
 				}
 			}finally {

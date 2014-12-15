@@ -48,7 +48,7 @@ public class UserDao {
 		List<EventMember> userList = new ArrayList<EventMember>();
 		try {
 			try{
-				String statement = "SELECT me.id,me.userId,me.userName, em.in_progress_folder_id, em.for_approval_folder_id FROM member me, eventmember em where em.user_id=me.id and em.event_id = ?";
+				String statement = "SELECT me.id,me.userId,me.userName, em.in_progress_folder_id, em.for_approval_folder_id, em.role FROM member me, eventmember em where em.user_id=me.id and em.event_id = ? and em.active=1";
 				PreparedStatement stmt;
 
 				stmt = conn.prepareStatement(statement);
@@ -57,7 +57,7 @@ public class UserDao {
 				while (resultSet.next()) {
 //					System.out.println("userId = " + resultSet.getInt("id"));
 					//userList.add(new User(resultSet.getInt("id"),resultSet.getString("userName"),resultSet.getString("userId")));
-					userList.add(new EventMember(new User(resultSet.getInt("id"),resultSet.getString("userName"),resultSet.getString("userId")), event, resultSet.getString("in_progress_folder_id"), resultSet.getString("for_approval_folder_id")));
+					userList.add(new EventMember(new User(resultSet.getInt("id"),resultSet.getString("userName"),resultSet.getString("userId")), event, resultSet.getString("in_progress_folder_id"), resultSet.getString("for_approval_folder_id"),resultSet.getString("role")));
 				
 				}
 			}finally {

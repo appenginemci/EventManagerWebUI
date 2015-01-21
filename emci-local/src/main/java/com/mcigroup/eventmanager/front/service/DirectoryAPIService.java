@@ -3,12 +3,7 @@ package com.mcigroup.eventmanager.front.service;
 import java.io.IOException;
 
 import com.google.api.services.admin.directory.Directory;
-import com.google.api.services.admin.directory.Directory.Groups.List;
-import com.google.api.services.admin.directory.model.Group;
-import com.google.api.services.admin.directory.model.Groups;
 import com.google.api.services.admin.directory.model.User;
-import com.google.api.services.admin.directory.model.Users;
-import com.mcigroup.eventmanager.front.helper.PropertiesManager;
 import com.mcigroup.eventmanager.front.security.CredentialLoader;
 
 
